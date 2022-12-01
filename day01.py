@@ -11,3 +11,5 @@ for line in lines:
         current = 0
 
 print(max(elves))
+
+print(sum(sorted(elves, reverse=True)[:3]))
