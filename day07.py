@@ -72,6 +72,12 @@ class Dir:
     ) -> "Dir":
         return [dir for dir in self.dirs if dir.name == name][0]
 
+    def __ge__(self, other):
+        return self.size >= other.size
+
+    def __lt__(self, other):
+        return self.size <= other.size
+
 
 def get_dirs_size_max(
         root: Dir,
@@ -84,6 +90,20 @@ def get_dirs_size_max(
         result.append(root)
     for dir in root.dirs:
         result += get_dirs_size_max(root=dir, size_max=size_max)
+    return result
+
+
+def get_dirs_size_min(
+        root: Dir,
+        size_min: int = 100000,
+        result: Optional[List[Dir]] = None,
+) -> List["Dir"]:
+    result = [] if not result else result
+
+    if root.size >= size_min:
+        result.append(root)
+    for dir in root.dirs:
+        result += get_dirs_size_min(root=dir, size_min=size_min)
     return result
 
 
@@ -109,10 +129,25 @@ for line in input:
 # assert root.get_dir_by_name(name="a").size == 94853
 # assert root.get_dir_by_name(name="a").get_dir_by_name("e").size == 584
 
-total_size = 0
-dirs = get_dirs_size_max(root, size_max=100000)
-for dir in dirs:
-    total_size += dir.size
+# total_size = 0
+# dirs = get_dirs_size_max(root, size_max=100000)
+# for dir in dirs:
+#     total_size += dir.size
 
 # assert total_size == 95437
-print(total_size)
+# print(total_size)
+
+TOTAL_DISK = 70000000
+MINIMUM = 30000000
+total_size = root.size
+free = TOTAL_DISK - total_size
+
+# assert free == 21618835
+
+needed = MINIMUM - free
+# assert needed == 8381165
+
+dirs = get_dirs_size_min(root, size_min=needed)
+# assert min(dirs).size == 24933642
+
+print(min(dirs).size)
